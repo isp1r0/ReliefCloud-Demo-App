@@ -1,0 +1,722 @@
+'use strict';
+
+//Map service 
+angular.module('events').service('MapService', function () {
+
+	google.maps.visualRefresh = true;
+
+	// set the inital map variables for full scope
+	var map;
+	var eventMarkers = [];
+	var assessmentPaths = [];
+	var servicePaths = [];
+	var securityMarkers = [];
+	var officeMarkers = [];
+	var warehouseMarkers = [];
+
+
+	//Create a dashboard and data table        
+	var eventdashboard;
+	var eventdata;	
+	var orgdashboard;
+	var orgdata;
+
+
+	var msgForm;
+
+
+
+
+
+
+
+
+
+
+	//build map
+
+//events map shows all events
+this.buildEventsMap = function (r_events){
+
+//build markers
+
+         _.each(r_events, function (r_event) {
+			   item =  {
+			           latitude: r_event.content.location.latitude,
+			           longitude: r_event.content.location.longitude,
+			           showWindow: false,
+			           title: r_event.content.name, 
+			          }					        
+			  	eventMarkers.push(item);		
+
+		});
+
+
+		//return a map object
+		var $scope.map = {
+            control: {},
+            version: "uknown",
+            showTraffic: false,
+            showBicycling: false,
+            showWeather: false,
+            showHeat: false,
+            center: {
+                latitude: 35,
+                longitude: 7
+            },
+            options: {
+                streetViewControl: false,
+                panControl: false,
+                maxZoom: 20,
+                minZoom: 3
+            },
+            zoom: 3,
+            dragging: false,
+            bounds: {},
+            eventMarkers: eventMarkers,
+            events: {
+                tilesloaded: function (map, eventName, originalEventArgs) {
+                },
+                click: function (mapModel, eventName, originalEventArgs) {
+                    // 'this' is the directive's scope
+                    console.log("user defined event: " + eventName, mapModel, originalEventArgs);
+
+    
+
+                  
+                }
+            }
+        };
+ 
+  $scope.$apply();
+  	
+	    	         
+
+	      
+	    	
+	    	// listen for marker clicks 			
+			google.maps.event.addListener(eventMarkers, 'click', function(event){
+				alert('you clicked me');
+			);
+	    	
+
+
+
+
+
+
+}
+
+
+
+
+
+	this.addAssessmentPolys = function(assessmentAreas){
+
+		//create infowindow before loop
+		infowindowAssessmentPoly = new google.maps.InfoWindow();
+
+		//iterate over the assessmentAreas
+		$.each(assessmentAreas, function(key, AssessmentArea) {
+
+			//build the url for area
+			areaUrl = rootPath+'/assessmentareas/'+ AssessmentArea.id;
+
+
+			//parse out lat lngs
+			pointHolder = [];
+			pathHolder = [];
+			points = AssessmentArea.polygon;
+			points = points.replace(/[\)]/g, "");
+			points = points.split("(");
+
+			//check for blanks, if not blank put into array
+
+			$.each(points, function(key, point) {
+				if (point != ""){
+
+					//split the points by the comma
+					pointsArray = point.split(',');
+					lat = pointsArray[0];
+					lng = pointsArray[1];
+					latLng = new google.maps.LatLng(lat, lng);
+					pathHolder.push(latLng);
+
+					}
+
+			});
+
+
+
+
+			assessmentPoly = new google.maps.Polygon({
+				path: pathHolder,
+				clickable: true,	
+				strokeColor: '#FF0000',
+				strokeOpacity: 0.8,
+				strokeWeight: 2,
+				fillColor: '#FF0000',
+				fillOpacity: 0.35,
+				map: map});
+
+			//set custom properties
+			assessmentPoly.myDate = AssessmentArea.created;                                 
+			assessmentPoly.myOwner = AssessmentArea.owner.organization.name;
+
+
+
+	        var content = '<b><u>Assessment Area</u></b><p/>' + 
+	        '<b>Area:</b> '+  AssessmentArea.name  +'<br/>'+ 
+	        '<b>Description:</b>'+  AssessmentArea.description  +'<br/>'+ 
+	        '<b>Created:</b>' +  AssessmentArea.created  +'<br/>'+ 
+	        '<b>Event:</b>'+  eventName  +'<br/>'+
+	        '<b>Created by:</b>' +  AssessmentArea.owner.username  +'<br/>'+ 
+	        '<b>Owner:</b>' +  AssessmentArea.owner.organization.name  +'<br/>'+ 
+	        '<a alt="Accoord Assessment Area" href="'+areaUrl+'">Visit the Assessment Area</a>';
+
+
+			google.maps.event.addListener(assessmentPoly, 'click', function(event){
+				infowindowAssessmentPoly.setContent(content); 
+				infowindowAssessmentPoly.setPosition(event.latLng); 
+				infowindowAssessmentPoly.open(map);}
+			);
+
+
+			assessmentPaths.push(assessmentPoly);
+			pathHolder=[];
+
+		});
+
+
+
+
+
+	}
+
+
+	this.addServicePolys = function(serviceAreas){
+
+		//create infowindow before loop
+		infowindowServicePoly = new google.maps.InfoWindow();
+
+		//iterate over the assessmentAreas
+		$.each(serviceAreas, function(key, serviceArea) {
+
+			//build the url for area
+			areaUrl =rootPath+'/serviceareas/'+ serviceArea.id;
+
+
+			//parse out lat lngs
+			pointHolder = [];
+			pathHolder = [];
+			points = serviceArea.polygon;
+			points = points.replace(/[\)]/g, "");
+			points = points.split("(");
+
+			//check for blanks, if not blank put into array
+
+			$.each(points, function(key, point) {
+				if (point != ""){
+
+					//split the points by the comma
+					pointsArray = point.split(',');
+					lat = pointsArray[0];
+					lng = pointsArray[1];
+					latLng = new google.maps.LatLng(lat, lng);
+					pathHolder.push(latLng);
+
+					}
+
+			});
+
+
+
+
+			servicePoly = new google.maps.Polygon({
+				path: pathHolder,
+				clickable: true,	
+				strokeColor: '#415776',
+				strokeOpacity: 0.8,
+				strokeWeight: 2,
+				fillColor: '#415776',
+				fillOpacity: 0.35,
+				map: map});
+
+			//set custom properties
+			servicePoly.myDate = serviceArea.created;                                 
+			servicePoly.myOwner = serviceArea.owner.organization.name;
+
+
+	        var content = '<b><u>Service Area</u></b><p/>' + 
+	        '<b>Area:</b> '+  serviceArea.name  +'<br/>'+ 
+	        '<b>Description:</b>'+  serviceArea.description  +'<br/>'+ 
+	        '<b>Created:</b>' +  serviceArea.created  +'<br/>'+ 
+	        '<b>Event:</b>'+  eventName  +'<br/>'+
+	        '<b>Created by:</b>' +  serviceArea.owner.username  +'<br/>'+ 
+	        '<b>Owner:</b>' +  serviceArea.owner.organization.name  +'<br/>'+ 
+	        '<a alt="Accoord Service Area" href="'+areaUrl+'">Visit the Service Area</a>';
+
+
+			google.maps.event.addListener(servicePoly, 'click', function(event){
+				infowindowServicePoly.setContent(content); 
+				infowindowServicePoly.setPosition(event.latLng); 
+				infowindowServicePoly.open(map);}
+			);
+
+
+			servicePaths.push(servicePoly);
+			pathHolder=[];
+
+		});
+
+
+	}
+
+	this.addSecurityMarkers = function (incidents){
+
+
+		//create infowindow before loop
+		infowindowSecIncident = new google.maps.InfoWindow();
+
+		//iterate over the assessmentAreas
+		$.each(incidents, function(key, incident) {
+
+
+
+			//set up icons		
+
+			switch (incident.type)
+			{
+			case "Abduction":
+			iconPath =rootPath+"/resources/images/icons/abductionIcon.png";
+			break;
+			case "Assault":
+			iconPath =rootPath+"/resources/images/icons/shootingIcon.png";
+			break;
+			case "Demonstration":
+			iconPath =rootPath+"/resources/images/icons/strikeIcon.png";
+		  	break;
+			case "Rape":
+			iconPath =rootPath+"/resources/images/icons/rapeIcon.png";
+			break;	
+			case "Theft":
+			iconPath =rootPath+"/resources/images/icons/theftIcon.png";
+		  	break;	  
+			case "Traffic":
+			iconPath =rootPath+"/resources/images/icons/securityIcon.png";
+		  	break;	  
+			case "Violence":
+			iconPath =rootPath+"/resources/images/icons/securityIcon.png";
+		  	break;
+			default:
+			iconPath =rootPath+"/resources/images/icons/securityIcon.png";
+			}
+
+
+			//build the url for area
+			incidentUrl = rootPath+'/securityincidents/'+ incident.id;
+
+			var icon = new google.maps.MarkerImage(iconPath,
+					new google.maps.Size(32, 37),
+					new google.maps.Point(0, 0),
+					new google.maps.Point(18, 37),
+					new google.maps.Size(32, 37)
+					);
+
+			lat = incident.lat;
+			lng = incident.lng;
+			latLng = new google.maps.LatLng(lat, lng);
+
+			marker = new google.maps.Marker({       
+				position: latLng,        
+				icon: icon,
+				map: map
+				}); 
+
+		        var content = '<b><u>Security Incident</u></b><p/>' + 
+		        '<b>Type:</b> '+  incident.type  +'<br/>'+ 
+		        '<b>Subject:</b> '+  incident.subject  +'<br/>'+ 
+		        '<b>Description:</b>'+  incident.description  +'<br/>'+ 
+		        '<b>Date:</b>' +  incident.incidentdate   +'<br/>'+ 
+		        '<b>Event:</b>'+  eventName  +'<br/>'+
+		        '<a alt="Accoord Security Incident" href="'+incidentUrl+'">Visit the Security Incident</a>';	
+
+				google.maps.event.addListener(marker, 'click', function(event){
+					infowindowSecIncident.setContent(content); 
+					infowindowSecIncident.setPosition(event.latLng); 
+					infowindowSecIncident.open(map);}
+				);
+
+				//set custom properties
+				marker.myDate = incident.incidentdate;                                 
+				marker.myOwner = incident.owner.organization.name;
+
+				//push marker into array to check later if marker exists
+				securityMarkers.push(marker);	
+
+		});
+	}
+
+
+
+
+	this.updateMessages = function(messages) {
+
+
+
+		//get the message container
+		messageDivElement = document.getElementById("messages");
+		// add some style
+	  	 messageDivElement.setAttribute("style", "width:600px");
+		//empty the children
+		$("#messages").empty();
+
+
+
+		var msgLength = messages.length - 1;
+	    //notice that we are counting backwards
+	    //TODO limit the msgs to 20
+		for (var i = msgLength; i >= 0; i--) {
+
+
+					date = new Date(messages[i].created);
+					hour = date.getHours();
+				  	min = date.getMinutes();
+					sec = date.getSeconds();
+					formatedDate = date.toDateString();
+
+
+			    	//create a holder for an individual message
+			    	messageHolder = document.createElement("div");
+			    	messageHolder.setAttribute("id", "msgHolders");
+			    	messageHolder.setAttribute("style", "border:2px solid #dcdcdc; padding:10px; margin-bottom:10px");
+			    	//create and profile pic
+			    	profileImg = document.createElement("img");
+			    	profileImg.setAttribute("id", "img_pic_"+i);
+					profileImg.setAttribute("src", rootPath+"/ajax/getProfilePic?id=" +messages[i].owner.id);
+			    	//create a message span
+				  	newMsgBox = document.createElement("span");
+				  	newMsgBox.setAttribute("id", "msgB_"+i);
+				  	newMsgBox.setAttribute("class", "msgbox");
+				  	newMsgBox.setAttribute("style", "vertical-align:top");
+				  	//create a footer
+				  	newMsgFooter = document.createElement("div");
+				  	newMsgFooter.setAttribute("id", "msgF_"+i);
+				  	newMsgFooter.setAttribute("class", "msgfooter");
+
+				  	//append holder to div, then image span and footer to holder
+				  	messageDivElement.appendChild(messageHolder);
+				  	messageHolder.appendChild(profileImg);
+				  	messageHolder.appendChild(newMsgBox);
+				  	messageHolder.appendChild(newMsgFooter);
+
+					$("#msgB_"+i).text(messages[i].message);
+					$("#msgF_"+i).text('posted by ' +messages[i].owner.username+ ' on ' + formatedDate + ' @ ' +hour+ ' hrs and '+min+ ' minutes' );
+
+
+		}	
+
+	}
+
+
+	//dashboard
+
+	this.drawEventDashboard = function(event) {
+
+		//Create a dashboard and data table        
+		eventdashboard = new google.visualization.Dashboard(document.getElementById('eventdashboard')); 
+
+		//create event table to hold msg, AA and SA info
+		eventsummarydata = new google.visualization.DataTable();	
+		eventsummarydata.addColumn('string', 'Activity Type');
+		eventsummarydata.addColumn('number', 'Services');
+		eventsummarydata.addRow(['Assessments', event.assessmentareas.length ]);
+		eventsummarydata.addRow(['Services', event.serviceareas.length ]);
+
+	    //type 
+	    var typechart = new google.visualization.ChartWrapper({
+	  	  'chartType': 'PieChart',
+	  	  'containerId': 'typechart_div',
+	  	  'options': {
+	  	    'width': 450,
+	  	    'height': 300,
+	  	  	'colors':['red','blue'],
+	  	    'title' :"Assessments vs Services"
+	  	  }
+	  	});
+
+	    
+
+		  // Define a category picker control for the type column
+		  var typePicker = new google.visualization.ControlWrapper({
+		    'controlType': 'CategoryFilter',
+		    'containerId': 'typeSelect',
+		    'options': {
+		      'filterColumnLabel': 'Activity Type',
+		      'ui': {
+		      'labelStacking': 'vertical',
+		        'allowTyping': false,
+		        'allowMultiple': true
+		      }
+		    }
+		  });
+
+		  //bind and draw the dashboard
+		  eventdashboard.bind(typePicker, [typechart]);
+		  eventdashboard.draw(eventsummarydata);
+
+	//### A table with orgs and a category select
+
+
+		//Create a org Dashboard and data table        
+		orgdashboard = new google.visualization.Dashboard(document.getElementById('orgdashboard')); 
+		//create org table to hold msg, AA and SA info
+		orgdata = new google.visualization.DataTable();	
+		orgdata.addColumn('number', 'ID');
+		orgdata.addColumn('string', 'Type');
+		orgdata.addColumn('string', 'Organization');
+		orgdata.addColumn('date', 'Created');	
+
+		//set the values in a loop AA
+		$.each(event.assessmentareas, function(key, aa) {
+			//change json date to date object
+			date = new Date(aa.created);
+
+			orgdata.addRow([aa.id, 'Assessment',aa.owner.organization.name, date ]);
+
+		}); 
+		//set the values in a loop for SA
+		$.each(event.serviceareas, function(key, sa) {
+			//change json date to date object
+			date = new Date(sa.created);
+
+			orgdata.addRow([sa.id, 'Service',sa.owner.organization.name, date ]);
+
+		}); 
+
+
+		// Define a category picker control for the Org column
+		var orgPicker = new google.visualization.ControlWrapper({
+		  'controlType': 'CategoryFilter',
+		  'containerId': 'orgSelect',
+		  'options': {
+		    'filterColumnLabel': 'Organization', 
+		    'ui': {
+		    'labelStacking': 'horizonal',
+		      'allowTyping': false,
+		      'allowMultiple': true
+		    }
+		  }
+		});
+
+		  // Define a table
+		  var orgtable = new google.visualization.ChartWrapper({
+		    'chartType': 'Table',
+		    'containerId': 'orgtable',
+		    'options': {
+		      'width': '450px'
+		    }
+		  });
+
+		  //bind and draw the dashboard
+		  orgdashboard.bind(orgPicker, orgtable);
+		  orgdashboard.draw(orgdata);  
+
+
+	//####### Now a message line chart	  
+
+
+			//create event table to hold msg
+			eventmsgdata = new google.visualization.DataTable();	
+
+			eventmsgdata.addColumn('date', 'Created');
+			eventmsgdata.addColumn('number', 'Number');
+
+			//create msg table
+			if(event.messages.length != null){
+
+				//count length of arrays and put into rows
+				eventmsgdata.addRows(event.messages.length);
+
+				msgCount = 0;
+				msgDates = [];
+
+				//set the values in a loop
+				$.each(event.messages, function(key, msg) {
+					//change json date to date object
+					date = new Date(msg.created);
+					msgCount = msgCount + 1;
+					eventmsgdata.addRow([date, msgCount]);
+
+				}); 
+
+			}
+
+		  //line chart for messages
+
+		  	var vaxislength = event.messages.length * 1.5;
+
+
+		    // Create and draw the visualization.
+		    new google.visualization.AreaChart(document.getElementById('msgchart_div')).
+		        draw(eventmsgdata, {curveType: "function",
+		                    width: 300, height: 200,
+		                    vAxis: {maxValue: vaxislength,
+		                    		minValue: 0	
+		                    },
+		                    title: 'Message and Update Activity'
+		        		}
+		            );	  
+
+	//#############
+	//Build the event handlers for the timeline and slectors
+	//#############
+
+		    // When the slector is selected, togle the markers.
+		    google.visualization.events.addListener(typePicker, 'statechange', function() {
+
+		  	 //clear the timeline
+		  	 //TODO figure out how to filter the timeline
+		  	//eventTlSource.clear();
+		  	//tempEvent =[];
+		  	//timeLineEventArray =[];
+
+
+		  	//hide the aa polys
+		  	$.each(assessmentPaths, function(index, aaPoly) { 
+
+		  		aaPoly.setVisible(false);
+
+		  	});    
+		  	//hide the sa polys
+		  	$.each(servicePaths, function(index, saPoly) { 
+
+		  		saPoly.setVisible(false);
+
+		  	}); 
+
+
+		      //selection array
+		      selections = typePicker.getState().selectedValues;
+
+		  	//if selction is empty, show all polys
+		  	if (selections == "")	{
+
+		  		//rebuild the timeline with all events
+		  			 //clear the timeline
+		             //tempEvents =events;
+		  		//buildEventsTimeline(events);
+
+		  		//show the polys
+		  		$.each(assessmentPaths, function(index, aaPoly) { 
+
+		  			aaPoly.setVisible(true);
+
+		  		}); 
+		  		//show the polys
+		  		$.each(servicePaths, function(index, saPoly) { 
+
+		  			saPoly.setVisible(true);
+
+		  		}); 
+		  	}    
+
+
+		  	//iterate over the selctions
+		  	$.each(selections, function(index, selection) { 
+		  	    	//iterate over the  polys
+
+		  				if ("Assessments" == selection){
+		  					$.each(assessmentPaths, function(index, poly) {
+		  					poly.setVisible(true);
+		  					});
+		  				}else if ("Services" == selection){
+		  					$.each(servicePaths, function(index, spoly) {
+		  					spoly.setVisible(true);
+		  					});
+		  				} else{
+		  					$.each(assessmentPaths, function(index, poly) {
+			  					poly.setVisible(true);
+			  					});
+		  					$.each(servicePaths, function(index, spoly) {
+			  					spoly.setVisible(true);
+			  					});
+		  				}	  			
+
+		  	    	//iterate over the tempEventsArray and only build selected 
+
+
+
+		  	});	    
+
+		  	//buildEventsTimeline(tempEvents); 
+		  	//TODO Figure out how to filter the timeline
+
+
+		    });  
+		 //end event handlers
+
+
+
+
+
+
+	}
+
+	this.buildMsgForm = function(){
+		msgForm = document.getElementById('msgForm');
+		//hide the msg form
+		$("#msgDiv").hide();
+
+
+	//messaging...build text area and submit elements dynamicly
+
+	    messageTextArea = document.createElement("input");
+	  	messageTextArea.setAttribute("name", "msg");
+		messageTextArea.setAttribute("id", "msg");
+		messageTextArea.setAttribute("cols", "100");
+		//messageTextArea. add text
+	  	messagesubmit = document.createElement("input");
+	  	messagesubmit.setAttribute("name", "submitPost");
+	  	messagesubmit.setAttribute("type", "submit");
+	  	messagesubmit.setAttribute("value", "Post");
+	  	//add to the DOM 
+	  	$("#msgForm").append(messageTextArea);
+	  	$("#msgForm").append(messagesubmit);
+
+	  	//make textarea resizable
+	  	//$("msg").resizable({handles: "se"});
+	  	Spring.addDecoration(new Spring.ElementDecoration({elementId : 'msg', widgetType: "dijit.form.Textarea",widgetAttrs: { promptMessage : "Help Coordinate and Share Information." }})); 
+	}
+
+	this.showMsgForm = function(type){
+
+
+		switch (type)
+		{
+		case "update":
+			$("#msgDiv").toggle();
+		break;
+		case "photo":
+			$.jGrowl("Photo posting has been disabled for the demo");
+		break;
+		case "file":
+			$.jGrowl("File posting has been disabled for the demo");
+		break;
+		default:
+			$("#msgDiv").toggle();
+		}
+
+	}
+
+
+
+
+});
+
+
+
+
+
+
+
