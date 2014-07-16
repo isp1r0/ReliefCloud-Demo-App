@@ -1,0 +1,42 @@
+<section class="row" data-ng-controller="TentController">
+	
+	<h3 class="col-md-12 text-center" data-ng-show="hasConnectedTentAccounts()">Connected Tent Accounts:</h3>
+	<div class="col-md-12 text-center">
+		<div class="remove-account-container">
+			<img ng-src="/modules/users/img/buttons/tent.jpg"><br />
+			Your <b>{{entity}}</b> account is wired up. 
+			<p />
+			Remove Account&nbsp; <a class="btn btn-danger btn-remove-account" data-ng-click="removeTentAccount()">
+				<i class="glyphicon glyphicon-trash"></i>
+			</a>
+		</div>
+	</div>
+
+
+
+	<h3 class="col-md-12 text-center">Wire up your Organizations Tent Server</h3>
+	<div class="col-xs-offset-2 col-xs-8 col-md-offset-5 col-md-2">
+		<div class="well" width=600px>
+			This would be some text about the tent server - like:  Your data is saved on your organizations server which runs the tent.io propotcal (link).  In order to interact with Coordinatis,  you will need to provide the entity url for a tent service (does not need to be you organization - technically) - read more here (link)
+		</div>
+	</div>
+	
+	<div class="col-xs-offset-2 col-xs-16 col-md-offset-5 col-md-2">
+		<form action="/auth/tent/link" method="post" class="signin form-horizontal" autocomplete="on">
+			<fieldset>
+				<div class="form-group">
+					<label for="entity">Entity</label>
+					<input ng-model="entity" type="text" id="entity" name="entity" class="form-control" placeholder="Tent Entity"> {{entity}}
+				</div>
+				<div class="text-center form-group">
+					<button type="submit" class="btn btn-primary">Submit</button>&nbsp; or&nbsp;<br />
+					<a href="/#!/settings/myaccount">back to Account Settings</a>
+				</div>
+				<div data-ng-show="error" class="text-center text-danger">
+					<strong>{{error}}</strong>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</section>
+

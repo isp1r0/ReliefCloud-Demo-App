@@ -1,0 +1,51 @@
+<section class="row" data-ng-controller="SettingsController">
+<p />
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src={{profilePicUri}} alt="" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h4>
+                            {{user.displayName}}</h4>
+
+                        <p>
+                            <i class="glyphicon glyphicon-globe"></i>&nbsp;{{user.tent.entity}} 
+                             <br />
+                            <i class="glyphicon glyphicon-envelope"></i>&nbsp;{{user.email}}
+                            <br />
+                            <i class="glyphicon glyphicon-user"></i>&nbsp;{{user.username}}
+                            <br />
+                          
+                        <!-- Split button -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary">
+                                Settings</button>
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span><span class="sr-only">Settings</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/#!/settings/profile">Edit Profile</a></li>
+                                <li><a href="/#!/settings/accounts">Social Accounts</a></li>
+                                <li><a href="/#!/settings/password">Update Password</a></li>
+                                <li class="divider"></li>
+                                <li><a href="/#!/settings/tent">Tent Account</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+                        
+                    
+
+</section>

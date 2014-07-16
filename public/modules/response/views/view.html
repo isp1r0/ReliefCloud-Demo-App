@@ -1,0 +1,36 @@
+
+
+<section data-ng-controller="ResponseController" data-ng-init="findOneTent()">
+
+
+
+
+	<div data-ng-show="error" class="text-center text-danger">
+		<h1>{{error}}</h1>
+	</div>
+
+	<div data-ng-show="feedback" class="text-center text-danger">
+			<strong>{{feedback}}</strong>
+	</div>
+
+	<div data-ng-show="!error">
+		<div class="page-header">
+			<h1>{{event.content.name}}</h1>
+		</div>
+		<div class="pull-right" data-ng-show="authentication.user.tent.entity == event.entity">
+			<a class="btn btn-primary" href="/#!/response/events/{{event.id}}/edit">
+				<i class="glyphicon glyphicon-edit"></i>
+			</a>
+			<a class="btn btn-primary" data-ng-click="remove();">
+				<i class="glyphicon glyphicon-trash"></i>
+			</a>
+		</div>
+		<small>
+			<em class="text-muted">Posted on {{event.content.created | date:'mediumDate'}} by {{event.entity}}</em>
+		</small>
+	</div>
+
+
+
+</section>
+

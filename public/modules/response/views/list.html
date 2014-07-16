@@ -1,0 +1,113 @@
+
+
+
+
+
+
+<section data-ng-controller="ResponseController">
+
+<hr>
+</p>
+
+<button ng-click="formshow=true" ng-init="formshow=false">
+  Show form
+</button>
+
+<div eventform-map></div>
+
+      <div  class="controls" id="eventFilter">
+        <input type="checkbox" name="type" id="changetype-all" checked="checked">
+        <label for="changetype-all">All</label>
+
+        <input type="checkbox" name="type" id="changetype-establishment">
+        <label for="changetype-establishment">Establishments</label>
+
+        <input type="checkbox" name="type" id="changetype-geocode">
+        <label for="changetype-geocode">Geocodes</label>
+    </div>
+
+
+ <div class="google-map" coordinatis-map="" latitude="37" longitude="3"></div>
+
+  
+<!--
+    <div class="pure-u-1-6 map-control" id="todosControlTemplate">
+      <header>
+        <h3>Todo Maps</h3>
+        <small>Double click todo title or marker to edit.</small> 
+        <div class="pure-menu pure-menu-open pure-menu-horizontal">
+          <ul>
+            <li ng-class="{'pure-menu-selected': location.path() == '/events'} "><a href="#!/events">All</a></li>
+            <li ng-class="{'pure-menu-selected': location.path() == '/events/active'}"><a href="#!/events">Active</a></li>
+            <li ng-class="{'pure-menu-selected': location.path() == '/events/completed'}"><a href="#!/events">Completed</a></li>
+          </ul>
+        </div>
+      </header>
+      <div ng-show="todos.filtered().length">
+        <ul>
+          <li ng-repeat="todo in todos.filtered()" ng-class="{completed: todo.completed}">
+            <div>
+              <input type="checkbox" ng-model="todo.completed">
+              <label 
+                ng-click="controls.openInfoWindowByTodoId(todo.id)"
+                ng-dblclick="controls.editTodoById(todo.id)">{{todo.title}}</label>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <footer>
+        <span ng-show="todos.remainingCount()">
+          <strong>{{todos.remainingCount()}}</strong>
+          <span ng-pluralize count="todos.remainingCount()" when="{ one: 'item left', other: 'items left' }"></span>
+        </span>
+        <hr />
+        <button class="pure-button" ng-click="todos.prune()" ng-show="todos.remainingCount() < todos.items.length">
+          Clear completed ({{todos.items.length - todos.remainingCount()}})
+        </button>
+        <button class="pure-button pure-button-success" ng-click="controls.newTodo()" ng-hide="controls.editTodo">New Todo</button>
+      </footer>
+    </div>
+
+-->
+
+
+
+ <div class="page-header">
+        <h1>Events from Tent</h1>
+    </div>
+    <div class="list-group" data-ng-init="getFeed()">
+        <a data-ng-repeat="event in events.posts" data-ng-href="#!/response/events/{{event.id}}" class="list-group-item" >
+            <small class="list-group-item-text">{{event.content.created | date:'medium'}} by {{event.entity}}</small>
+            <h4 class="list-group-item-heading">{{event.content.name}}</h4>
+           {{event.content.description}}
+        </a>
+    </div>
+
+
+    <div class="alert alert-warning text-center" data-ng-hide="!feed || feed.length">
+        No Feed yet, why don't you <a href="/#!/events/create">create one</a>?
+    </div>
+
+
+
+
+
+<!-- HERE ARE HTML CUTOM CONTROLS FOR MAP COMPONENTS - enabled via JS
+
+     <input id="pac-input" class="controls" type="text"
+        placeholder="Enter a location">
+
+
+         -->
+    
+
+    
+
+
+
+
+
+
+
+
+</section>
